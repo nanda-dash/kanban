@@ -1,0 +1,500 @@
+<html><head><base href="." target="_blank"><style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+  body {
+    background-color: #f5f7fc;
+    background-image: linear-gradient(135deg, #eaeff5 0%, #f5faff 100%);
+    min-height: 100vh;
+    padding-top: 5rem;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(76,110,245,0.15) 30%, rgba(88,99,245,0) 80%);
+    z-index: -2;
+  }
+
+  .kanban {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    margin-top: 1rem;
+  }
+
+  .column {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    position: relative;
+  }
+
+  .column:hover {
+    transform: translateY(-8px);
+    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .column-header {
+    font-size: 1.2rem;
+    color: #1a1f36;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+  }
+
+  .task-count {
+    background-color: #e8ebf8;
+    color: #4c6ef5;
+    font-size: 0.85rem;
+    padding: 6px 16px;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: 500;
+  }
+
+  .card {
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ffffff, #f9fafc);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+    padding: 1.4rem;
+    cursor: grab;
+    margin-top: 1rem;
+    position: relative;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: #f5f7fc;
+    color: #4c6ef5;
+    border: 1px solid #e0e4f0;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+  }
+
+  .delete-btn:hover {
+    background: #ff4757;
+    color: white;
+    opacity: 1;
+    box-shadow: 0 4px 8px rgba(255, 71, 87, 0.4);
+  }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #1a1f36;
+    margin-bottom: 0.8rem;
+  }
+
+  .card-description {
+    font-size: 0.9rem;
+    color: #525c7a;
+  }
+
+  .label {
+    display: inline-flex;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    font-weight: 500;
+  }
+
+  .label-high {
+    background-color: #ffe8e7;
+    color: #ff5a5a;
+  }
+
+  .label-medium {
+    background-color: #fff5e8;
+    color: #ff9c23;
+  }
+
+  .label-low {
+    background-color: #e8fcef;
+    color: #2bc48a;
+  }
+
+  .add-card {
+    padding: 0.8rem;
+    background: none;
+    border: 2px solid #d9dff0;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #4c6ef5;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.3s ease, border 0.3s ease, color 0.3s ease;
+  }
+
+  .add-card:hover {
+    background: #4c6ef5;
+    color: white;
+    border-color: #3452e8;
+  }
+
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .header-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1f36;
+  }
+
+  .time-date {
+    position: static;
+    width: auto;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .time-date:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  body.dark-mode {
+    background-color: #1a1a2e;
+    background-image: linear-gradient(135deg, #1e1e2e 0%, #2e2e48 100%);
+    color: #f5f5fa;
+  }
+  body.dark-mode .column {
+    background-color: #25254a;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+  body.dark-mode .card {
+    background: linear-gradient(135deg, #2e2e2e, #3a3a3a);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  body.dark-mode .card-title,
+  body.dark-mode .card-description,
+  body.dark-mode .column-header,
+  body.dark-mode .header-title,
+  body.dark-mode .time-date span,
+  body.dark-mode .time-date small {
+    color: #f5f5fa;
+  }
+  body.dark-mode .task-count {
+    background-color: #44476a;
+    color: #bfc8f0;
+  }
+  body.dark-mode .label {
+    color: #ffffff;
+  }
+  body.dark-mode .label-high {
+    background-color: #b00020;
+  }
+  body.dark-mode .label-medium {
+    background-color: #ff6f00;
+  }
+  body.dark-mode .label-low {
+    background-color: #388e3c;
+  }
+  body.dark-mode .add-card {
+    background: none;
+    border: 2px solid #565a8d;
+    color: #f5f5fa;
+  }
+  body.dark-mode .add-card:hover {
+    background: #565a8d;
+    border-color: #44476a;
+  }
+  body.dark-mode .header {
+    background: rgba(26, 26, 46, 0.95);
+  }
+  body.dark-mode .delete-btn {
+    background: #3a3a3a;
+    color: #b0a8c8;
+  }
+  body.dark-mode .delete-btn:hover {
+    background: #b00020;
+    color: white;
+  }
+</style></head><body>
+  <header class="header">
+    <div class="header-left">
+      <h1 class="header-title">Task Manager</h1>
+      <div class="time-date">
+        <span id="currentTime">00:00:00</span>
+        <small id="currentDate">Loading date...</small>
+      </div>
+    </div>
+    <button id="toggleDarkMode" style="padding: 0.8rem 1.2rem; background-color: #4c6ef5; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);">
+      🌙 Dark Mode
+    </button>
+  </header>
+  <div class="kanban">
+    <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <div class="column-header">
+        To Do <span class="task-count">3</span>
+      </div>
+      <div class="card" draggable="true" ondragstart="drag(event)" id="task1">
+        <button class="delete-btn" onclick="deleteCard(this)">×</button>
+        <div class="card-title" onclick="makeEditable(this)">Design New Landing Page</div>
+        <div class="card-description" onclick="makeEditable(this)">Create wireframes and mockups for the new product landing page</div>
+        <div class="priority-controls">
+          <span class="label label-high">High Priority</span>
+          <select class="priority-select" onchange="changePriority(this.closest('.card'), this.value)">
+            <option value="high" selected>High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="card" draggable="true" ondragstart="drag(event)" id="task2">
+        <button class="delete-btn" onclick="deleteCard(this)">×</button>
+        <div class="card-title" onclick="makeEditable(this)">User Research</div>
+        <div class="card-description" onclick="makeEditable(this)">Conduct user interviews and analyze feedback</div>
+        <div class="priority-controls">
+          <span class="label label-medium">Medium Priority</span>
+          <select class="priority-select" onchange="changePriority(this.closest('.card'), this.value)">
+            <option value="high">High</option>
+            <option value="medium" selected>Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="card" draggable="true" ondragstart="drag(event)" id="task3">
+        <button class="delete-btn" onclick="deleteCard(this)">×</button>
+        <div class="card-title" onclick="makeEditable(this)">Documentation Update</div>
+        <div class="card-description" onclick="makeEditable(this)">Update API documentation with new endpoints</div>
+        <div class="priority-controls">
+          <span class="label label-low">Low Priority</span>
+          <select class="priority-select" onchange="changePriority(this.closest('.card'), this.value)">
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low" selected>Low</option>
+          </select>
+        </div>
+      </div>
+      <button class="add-card">+ Add another card</button>
+    </div>
+    
+    <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <div class="column-header">
+        In Progress <span class="task-count">2</span>
+      </div>
+      <div class="card" draggable="true" ondragstart="drag(event)" id="task4">
+        <button class="delete-btn" onclick="deleteCard(this)">×</button>
+        <div class="card-title" onclick="makeEditable(this)">Frontend Development</div>
+        <div class="card-description" onclick="makeEditable(this)">Implement responsive design for mobile devices</div>
+        <div class="priority-controls">
+          <span class="label label-high">High Priority</span>
+          <select class="priority-select" onchange="changePriority(this.closest('.card'), this.value)">
+            <option value="high" selected>High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="card" draggable="true" ondragstart="drag(event)" id="task5">
+        <button class="delete-btn" onclick="deleteCard(this)">×</button>
+        <div class="card-title" onclick="makeEditable(this)">Database Optimization</div>
+        <div class="card-description" onclick="makeEditable(this)">Optimize query performance for main dashboard</div>
+        <div class="priority-controls">
+          <span class="label label-medium">Medium Priority</span>
+          <select class="priority-select" onchange="changePriority(this.closest('.card'), this.value)">
+            <option value="high">High</option>
+            <option value="medium" selected>Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+      <button class="add-card">+ Add another card</button>
+    </div>
+    
+    <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <div class="column-header">
+        Done <span class="task-count">1</span>
+      </div>
+      <div class="card" draggable="true" ondragstart="drag(event)" id="task6">
+        <button class="delete-btn" onclick="deleteCard(this)">×</button>
+        <div class="card-title" onclick="makeEditable(this)">Security Audit</div>
+        <div class="card-description" onclick="makeEditable(this)">Complete security review of authentication system</div>
+        <div class="priority-controls">
+          <span class="label label-high">High Priority</span>
+          <select class="priority-select" onchange="changePriority(this.closest('.card'), this.value)">
+            <option value="high" selected>High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+      <button class="add-card">+ Add another card</button>
+    </div>
+  </div>
+
+  <script>
+  // JavaScript to update time and date dynamically
+  function updateTimeAndDate() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const timeString = `${hours}:${minutes}:${seconds}`;
+    document.getElementById('currentTime').textContent = timeString;
+
+    const dateString = `${now.toLocaleDateString(undefined, { weekday: 'long' })}, ${now.toLocaleDateString()}`;
+    document.getElementById('currentDate').textContent = dateString;
+  }
+
+  // Initial call to initialize the time and date
+  updateTimeAndDate();
+  // Update time and date every second
+  setInterval(updateTimeAndDate, 1000);
+
+  function allowDrop(ev) {
+    ev.preventDefault();
+  }
+
+  function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+  }
+
+  function drop(ev) {
+    ev.preventDefault();
+    const data = ev.dataTransfer.getData("text");
+    const draggedElement = document.getElementById(data);
+    
+    let dropTarget = ev.target;
+    
+    while (dropTarget && !dropTarget.classList.contains('column')) {
+      dropTarget = dropTarget.parentElement;
+    }
+    
+    if (dropTarget && dropTarget.classList.contains('column')) {
+      const addButton = dropTarget.querySelector('.add-card');
+      dropTarget.insertBefore(draggedElement, addButton);
+      updateTaskCounts();
+    }
+  }
+
+  function deleteCard(deleteBtn) {
+    const card = deleteBtn.closest('.card');
+    card.classList.add('deleting');
+    setTimeout(() => {
+      card.remove();
+      updateTaskCounts();
+    }, 200);
+  }
+
+  function updateTaskCounts() {
+    document.querySelectorAll('.column').forEach(column => {
+      const count = column.querySelectorAll('.card').length;
+      column.querySelector('.task-count').textContent = count;
+    });
+  }
+
+  function makeEditable(element) {
+    element.contentEditable = true;
+    element.focus();
+    
+    // Save on enter or blur
+    element.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        element.blur();
+      }
+    });
+    
+    element.addEventListener('blur', function() {
+      element.contentEditable = false;
+    });
+  }
+
+  function changePriority(card, newPriority) {
+    const label = card.querySelector('.label');
+    label.className = `label label-${newPriority}`;
+    label.innerHTML = `${newPriority.charAt(0).toUpperCase() + newPriority.slice(1)} Priority`;
+  }
+
+  document.querySelectorAll('.add-card').forEach(button => {
+    button.addEventListener('click', function() {
+      const newId = 'task' + (document.querySelectorAll('.card').length + 1);
+      const newCard = document.createElement('div');
+      newCard.className = 'card';
+      newCard.draggable = true;
+      newCard.id = newId;
+      newCard.innerHTML = `
+        <button class="delete-btn" onclick="deleteCard(this)">×</button>
+        <div class="card-title" onclick="makeEditable(this)">New Task</div>
+        <div class="card-description" onclick="makeEditable(this)">Click to edit task description</div>
+        <div class="priority-controls">
+          <span class="label label-medium">Medium Priority</span>
+          <select class="priority-select" onchange="changePriority(this.closest('.card'), this.value)">
+            <option value="high">High</option>
+            <option value="medium" selected>Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      `;
+      newCard.addEventListener('dragstart', drag);
+      
+      const column = this.parentElement;
+      column.insertBefore(newCard, this);
+      updateTaskCounts();
+    });
+  });
+
+  const toggleDarkModeButton = document.getElementById('toggleDarkMode');
+  toggleDarkModeButton.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    if (document.body.classList.contains('dark-mode')) {
+      toggleDarkModeButton.innerHTML = '☀️ Light Mode';
+    } else {
+      toggleDarkModeButton.innerHTML = '🌙 Dark Mode';
+    }
+  });
+  </script>
+</body></html>
